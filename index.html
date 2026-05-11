@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minipottery – Influencer Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fdf6f0;
+      color: #3a2e28;
+      padding: 32px 20px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header h1 { font-size: 1.9rem; color: #7a4f3a; letter-spacing: 1px; }
+    header p  { margin-top: 6px; font-size: 0.9rem; color: #9a7860; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      max-width: 1100px;
+      margin: 0 auto 24px;
+    }
+    .tab-btn {
+      padding: 10px 24px;
+      border: 2px solid #c49a7a;
+      background: #fff;
+      color: #7a4f3a;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn.active {
+      background: #7a4f3a;
+      color: #fff;
+      border-color: #7a4f3a;
+    }
+
+    /* ── Panels ── */
+    .panel { display: none; max-width: 1100px; margin: 0 auto; }
+    .panel.active { display: block; }
+
+    /* ── Notice banner ── */
+    .notice {
+      background: #fff8f0;
+      border-left: 4px solid #e09050;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #7a5030;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .notice strong { color: #5a3820; }
+
+    /* ── Table ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    thead { background: #7a4f3a; color: #fff; }
+    thead th {
+      padding: 13px 14px;
+      text-align: left;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid #f0e5da; transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fdf0e8; }
+    tbody td {
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+    tbody td.empty {
+      color: #c0a898;
+      font-style: italic;
+    }
+
+    /* links */
+    a { color: #7a4f3a; font-weight: 600; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .nano  { background: #d4edda; color: #1e6040; }
+    .micro { background: #fde8c8; color: #8a5020; }
+    .mid   { background: #e0d4f5; color: #4a3080; }
+    .large { background: #ffd6d6; color: #8a1020; }
+    .collab-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #d0f0e8;
+      color: #1a6050;
+      margin-left: 8px;
+    }
+
+    /* category row */
+    .cat-row td {
+      background: #f5ede5;
+      color: #7a4f3a;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 7px 14px;
+    }
+
+    /* row number */
+    .num { color: #b09080; font-size: 0.8rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 0.78rem;
+      color: #b09080;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Minipottery Studio · Influencer Tracker</h1>
+  <p>@minipotterystudio &nbsp;·&nbsp; Toronto &amp; North York &nbsp;·&nbsp; Updated May 2026</p>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('previous')">📋 Sheet 1 — Previous Collaborators</button>
+  <button class="tab-btn" onclick="showTab('new')">🔍 Sheet 2 — 50 New Creators to Reach Out To</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SHEET 1 — Previous Collaborators
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-previous">
+
+  <div class="notice">
+    <strong>Your confirmed collaborators</strong> — these creators have already worked with or appeared on @minipotterystudio. Follower counts and emails marked "Check profile" need to be filled in by visiting each Instagram page. Add more rows at the bottom as you remember additional collabs.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Instagram Tag</th>
+          <th>Instagram URL</th>
+          <th>Email</th>
+          <th>Follower Count</th>
+          <th>Niche / Content Type</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td>Htut Aung</td>
+          <td><a href="https://www.instagram.com/htuthtuthtut/" target="_blank">@htuthtuthtut</a></td>
+          <td><a href="https://www.instagram.com/htuthtuthtut/" target="_blank">instagram.com/htuthtuthtut</a></td>
+          <td class="empty">Check profile</td>
+          <td>~9,952</td>
+          <td>Immersive travel &amp; Toronto content creator</td>
+          <td><span class="badge nano">Nano</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>—</td>
+          <td><a href="https://www.instagram.com/pinchofworlddiaries/" target="_blank">@pinchofworlddiaries</a></td>
+          <td><a href="https://www.instagram.com/pinchofworlddiaries/" target="_blank">instagram.com/pinchofworlddiaries</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td>Travel &amp; lifestyle diaries</td>
+          <td class="empty">—</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Secret Toronto</td>
+          <td><a href="https://www.instagram.com/secret_toronto/" target="_blank">@secret_toronto</a></td>
+          <td><a href="https://www.instagram.com/secret_toronto/" target="_blank">instagram.com/secret_toronto</a></td>
+          <td class="empty">Check profile</td>
+          <td>~102K</td>
+          <td>Toronto city guide — hidden gems &amp; local spots</td>
+          <td><span class="badge large">Large</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>Yessenia Kassandra</td>
+          <td><a href="https://www.instagram.com/yessykass/" target="_blank">@yessykass</a></td>
+          <td><a href="https://www.instagram.com/yessykass/" target="_blank">instagram.com/yessykass</a></td>
+          <td class="empty">Check profile</td>
+          <td>~8,061</td>
+          <td>Lifestyle, travel, dog parenting — Toronto Latina creator</td>
+          <td><span class="badge nano">Nano</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>—</td>
+          <td><a href="https://www.instagram.com/garbokwan/" target="_blank">@garbokwan</a></td>
+          <td><a href="https://www.instagram.com/garbokwan/" target="_blank">instagram.com/garbokwan</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">—</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td>Jamie-Lee</td>
+          <td><a href="https://www.instagram.com/jamieleesantos/" target="_blank">@jamieleesantos</a></td>
+          <td><a href="https://www.instagram.com/jamieleesantos/" target="_blank">instagram.com/jamieleesantos</a></td>
+          <td class="empty">Check profile</td>
+          <td>~4,377</td>
+          <td>Creative lifestyle, events, local Toronto</td>
+          <td><span class="badge nano">Nano</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td>Amiya</td>
+          <td><a href="https://www.instagram.com/explorewithamiya/" target="_blank">@explorewithamiya</a></td>
+          <td><a href="https://www.instagram.com/explorewithamiya/" target="_blank">instagram.com/explorewithamiya</a></td>
+          <td class="empty">Check profile</td>
+          <td>~8,069</td>
+          <td>Toronto travel &amp; lifestyle blogger</td>
+          <td><span class="badge nano">Nano</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td>Shian</td>
+          <td><a href="https://www.instagram.com/shian__design/" target="_blank">@shian__design</a></td>
+          <td><a href="https://www.instagram.com/shian__design/" target="_blank">instagram.com/shian__design</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td>Design content creator</td>
+          <td class="empty">—</td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td>—</td>
+          <td><a href="https://www.instagram.com/nannan.jpg/" target="_blank">@nannan.jpg</a></td>
+          <td><a href="https://www.instagram.com/nannan.jpg/" target="_blank">instagram.com/nannan.jpg</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td>Photography / visual content</td>
+          <td class="empty">—</td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td>Todo Toronto</td>
+          <td><a href="https://www.instagram.com/todotoronto/" target="_blank">@todotoronto</a></td>
+          <td><a href="https://www.instagram.com/todotoronto/" target="_blank">instagram.com/todotoronto</a></td>
+          <td class="empty">Check profile</td>
+          <td>~1M</td>
+          <td>#1 Toronto things to do guide — events &amp; local spots</td>
+          <td><span class="badge large">Large</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td>Therese</td>
+          <td><a href="https://www.instagram.com/itssotherese/" target="_blank">@itssotherese</a></td>
+          <td><a href="https://www.instagram.com/itssotherese/" target="_blank">instagram.com/itssotherese</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">—</td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td>Nicole Ferreira</td>
+          <td><a href="https://www.instagram.com/nicole.ferreira10/" target="_blank">@nicole.ferreira10</a></td>
+          <td><a href="https://www.instagram.com/nicole.ferreira10/" target="_blank">instagram.com/nicole.ferreira10</a></td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">Check profile</td>
+          <td class="empty">—</td>
+        </tr>
+        <!-- Add more rows below as you remember additional collaborators -->
+        <tr><td class="num">13</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">14</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">15</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">16</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">17</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">18</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">19</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr><td class="num">20</td><td class="empty">—</td><td class="empty">@</td><td class="empty">instagram.com/</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SHEET 2 — 50 New Creators
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-new">
+
+  <div class="notice">
+    <strong>Follower counts:</strong> These are approximate and change often — always check the profile before reaching out. &nbsp;|&nbsp;
+    <strong>Emails marked "Check bio"</strong> means visit their profile — most creators list their email or a contact link in their bio. &nbsp;|&nbsp;
+    <strong>Size key:</strong> <span class="badge nano">Nano</span> = 1K–10K &nbsp; <span class="badge micro">Micro</span> = 10K–50K &nbsp; <span class="badge mid">Mid</span> = 50K+
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Instagram Tag</th>
+          <th>Instagram URL</th>
+          <th>Email</th>
+          <th>Followers</th>
+          <th>Size</th>
+          <th>Content Type</th>
+          <th>Why They Fit Minipottery</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- POTTERY & CERAMICS -->
+        <tr class="cat-row"><td colspan="9">Pottery &amp; Ceramics — Toronto &nbsp;<span class="collab-tag">✓ Collaborators, NOT competitors</span>&nbsp; <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.75rem;color:#5a6060;">They do regular-sized pottery. Minipottery does miniature ceramics. Different product, same audience — partner up.</span></td></tr>
+
+        <tr>
+          <td class="num">1</td>
+          <td>Lambshead Studio</td>
+          <td>@lambsheadstudio</td>
+          <td><a href="https://www.instagram.com/lambsheadstudio/" target="_blank">instagram.com/lambsheadstudio</a></td>
+          <td class="empty">Check bio</td>
+          <td>~6.4K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Handmade ceramics</td>
+          <td>Functional + fanciful handmade ceramics — exact same world as minipottery</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>Oblate Clay</td>
+          <td>@oblate_clay</td>
+          <td><a href="https://www.instagram.com/oblate_clay/" target="_blank">instagram.com/oblate_clay</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Pottery studio</td>
+          <td>Active Toronto clay community — direct audience overlap</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Clay Space Studio</td>
+          <td>@clayspacestudio</td>
+          <td><a href="https://www.instagram.com/clayspacestudio/" target="_blank">instagram.com/clayspacestudio</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Ceramics studio + teaching</td>
+          <td>Teaching-focused studio on Gerrard St E — their students are mini pottery's audience</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>The Clay Room</td>
+          <td>@theclayroom</td>
+          <td><a href="https://www.instagram.com/theclayroom/" target="_blank">instagram.com/theclayroom</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Paint-your-own ceramics</td>
+          <td>Cozy ceramics experience — creative, hands-on audience</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>Toronto Potters</td>
+          <td>@torontopotters</td>
+          <td><a href="https://www.instagram.com/torontopotters/" target="_blank">instagram.com/torontopotters</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Community collective</td>
+          <td>40-year-old Toronto clay community — very engaged niche following</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td>Shayne Berlin Ceramics</td>
+          <td>@shayneberlinceramics</td>
+          <td><a href="https://www.instagram.com/shayneberlinceramics/" target="_blank">instagram.com/shayneberlinceramics</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Pottery artist + teacher</td>
+          <td>Viral wavy porcelain pieces — artsy Toronto audience, great for visibility</td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td>Mima Ceramics</td>
+          <td>@mimaceramics</td>
+          <td><a href="https://www.instagram.com/mimaceramics/" target="_blank">instagram.com/mimaceramics</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Pottery studio + classes</td>
+          <td>Michelle Organ's Toronto studio — tight-knit ceramics community</td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td>Michelle Mendlowitz</td>
+          <td>@michellemendlowitz</td>
+          <td><a href="https://www.instagram.com/michellemendlowitz/" target="_blank">instagram.com/michellemendlowitz</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Ceramic artist (OCAD grad)</td>
+          <td>Functional + sculptural ceramics, design-forward Toronto audience</td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td>Olive Branch Pottery</td>
+          <td>@olivebranchpottery</td>
+          <td><a href="https://www.instagram.com/olivebranchpottery/" target="_blank">instagram.com/olivebranchpottery</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Handbuilding classes</td>
+          <td>Small studio at 744 Shaw St — handmade feel matches minipottery perfectly</td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td>Pottery Dream Toronto</td>
+          <td>@potterydreamtoronto</td>
+          <td><a href="https://www.instagram.com/potterydreamtoronto/" target="_blank">instagram.com/potterydreamtoronto</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Aesthetic pottery studio</td>
+          <td>"Most aesthetic pottery studio in Toronto" — strong visual content, good collab fit</td>
+        </tr>
+
+        <!-- ART & CREATIVE LIFESTYLE -->
+        <tr class="cat-row"><td colspan="9">Art &amp; Creative Lifestyle — Toronto</td></tr>
+
+        <tr>
+          <td class="num">11</td>
+          <td>Erika Cruz</td>
+          <td>@autumnatelier</td>
+          <td><a href="https://www.instagram.com/autumnatelier/" target="_blank">instagram.com/autumnatelier</a></td>
+          <td class="empty">Check bio</td>
+          <td>~22K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Art + lifestyle</td>
+          <td>Strongest lifestyle fit — art-forward content directly aligns with minipottery's brand</td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td>Dylan Horner</td>
+          <td>@dylan.horner</td>
+          <td><a href="https://www.instagram.com/dylan.horner/" target="_blank">instagram.com/dylan.horner</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Interior design + lifestyle self-portraits</td>
+          <td>Interior design aesthetic — pottery as home decor is a natural angle</td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td>Karley Säägi</td>
+          <td>@karleykosmos</td>
+          <td><a href="https://www.instagram.com/karleykosmos/" target="_blank">instagram.com/karleykosmos</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Creative / aesthetic content</td>
+          <td>Original creative and aesthetic content — great visual match for minipottery</td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td>Nigel Seeb</td>
+          <td>@nigelseeb</td>
+          <td><a href="https://www.instagram.com/nigelseeb/" target="_blank">instagram.com/nigelseeb</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Coffee + design + travel</td>
+          <td>Design-focused feed — handmade ceramics fits the slow, thoughtful aesthetic</td>
+        </tr>
+        <tr>
+          <td class="num">15</td>
+          <td>Steven Tsinokas</td>
+          <td>@steventsinokas</td>
+          <td><a href="https://www.instagram.com/steventsinokas/" target="_blank">instagram.com/steventsinokas</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Travel + cinematography + photography</td>
+          <td>Strong visual storyteller — could produce beautiful content featuring minipottery</td>
+        </tr>
+
+        <!-- COZY / HOME / WELLNESS -->
+        <tr class="cat-row"><td colspan="9">Cozy, Home &amp; Wellness — Toronto / North York</td></tr>
+
+        <tr>
+          <td class="num">16</td>
+          <td>Stephie</td>
+          <td>@seasonsofstephie</td>
+          <td><a href="https://www.instagram.com/seasonsofstephie/" target="_blank">instagram.com/seasonsofstephie</a></td>
+          <td class="empty">Check bio</td>
+          <td>~11.2K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Seasonal, cozy, family lifestyle</td>
+          <td>Cozy seasonal aesthetic — handmade pottery fits naturally into her content world</td>
+        </tr>
+        <tr>
+          <td class="num">17</td>
+          <td>—</td>
+          <td>@happykryng</td>
+          <td><a href="https://www.instagram.com/happykryng/" target="_blank">instagram.com/happykryng</a></td>
+          <td class="empty">Check bio</td>
+          <td>~13.2K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Wellness, beauty, family</td>
+          <td>Wellness + home vibe — minipottery works as a "slow down &amp; create" angle</td>
+        </tr>
+        <tr>
+          <td class="num">18</td>
+          <td>Lillie Sun</td>
+          <td>@lsunxo</td>
+          <td><a href="https://www.instagram.com/lsunxo/" target="_blank">instagram.com/lsunxo</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Health, natural skincare, home goods</td>
+          <td>Home goods + natural lifestyle — handmade ceramics aligns perfectly</td>
+        </tr>
+        <tr>
+          <td class="num">19</td>
+          <td>Lisa St. Pierre</td>
+          <td>@mrs.lisastpierre</td>
+          <td><a href="https://www.instagram.com/mrs.lisastpierre/" target="_blank">instagram.com/mrs.lisastpierre</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Lifestyle + personal stories</td>
+          <td>Relatable everyday Toronto creator — good for authentic "gifted" style collab</td>
+        </tr>
+        <tr>
+          <td class="num">20</td>
+          <td>Camil</td>
+          <td>@camilfitmom</td>
+          <td><a href="https://www.instagram.com/camilfitmom/" target="_blank">instagram.com/camilfitmom</a></td>
+          <td class="empty">Check bio</td>
+          <td>~1.4K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fitness, lifestyle, food</td>
+          <td>True nano — likely to collab for gifted product, mom audience loves unique gifts</td>
+        </tr>
+
+        <!-- FOOD & TORONTO LOCAL -->
+        <tr class="cat-row"><td colspan="9">Food &amp; Toronto Local — Toronto / North York</td></tr>
+
+        <tr>
+          <td class="num">21</td>
+          <td>Hungry 416</td>
+          <td>@hungry416</td>
+          <td><a href="https://www.instagram.com/hungry416/" target="_blank">instagram.com/hungry416</a></td>
+          <td>hello@hungry416.com</td>
+          <td>~10.3K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Toronto food, lifestyle, experiences</td>
+          <td>Hyper-local Toronto audience — great for "Toronto things to do" angle</td>
+        </tr>
+        <tr>
+          <td class="num">22</td>
+          <td>Over Here Toronto</td>
+          <td>@overheretoronto</td>
+          <td><a href="https://www.instagram.com/overheretoronto/" target="_blank">instagram.com/overheretoronto</a></td>
+          <td>hi@overheretoronto.com</td>
+          <td>~3.6K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Toronto food, travel, experiences</td>
+          <td>Nano creator, email available — easy to reach, local Toronto community focus</td>
+        </tr>
+        <tr>
+          <td class="num">23</td>
+          <td>Jacqueline</td>
+          <td>@eatwithjacq</td>
+          <td><a href="https://www.instagram.com/eatwithjacq/" target="_blank">instagram.com/eatwithjacq</a></td>
+          <td>eatwithjacq@gmail.com</td>
+          <td>~10.3K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Food + lifestyle</td>
+          <td>Email available — easy outreach, lifestyle + food crossover works for pottery gifting</td>
+        </tr>
+        <tr>
+          <td class="num">24</td>
+          <td>Chrissy</td>
+          <td>@diningwithchrissy</td>
+          <td><a href="https://www.instagram.com/diningwithchrissy/" target="_blank">instagram.com/diningwithchrissy</a></td>
+          <td class="empty">Check bio</td>
+          <td>~25.8K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Food + travel</td>
+          <td>Strong Toronto food following — pottery as tableware or "unique Toronto gift" angle</td>
+        </tr>
+        <tr>
+          <td class="num">25</td>
+          <td>Kyra</td>
+          <td>@explorewithky</td>
+          <td><a href="https://www.instagram.com/explorewithky/" target="_blank">instagram.com/explorewithky</a></td>
+          <td>explorewithky@gmail.com</td>
+          <td>~2.8K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Lifestyle, beauty, food, travel</td>
+          <td>True nano with email — open to collabs, warm lifestyle content</td>
+        </tr>
+        <tr>
+          <td class="num">26</td>
+          <td>Kyra &amp; Kyla</td>
+          <td>@kyraandkyla</td>
+          <td><a href="https://www.instagram.com/kyraandkyla/" target="_blank">instagram.com/kyraandkyla</a></td>
+          <td>kyraxkyla@gmail.com</td>
+          <td>~1.9K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Lifestyle, travel, food</td>
+          <td>Duo account, nano, email available — very affordable collab</td>
+        </tr>
+        <tr>
+          <td class="num">27</td>
+          <td>—</td>
+          <td>@champagneang</td>
+          <td><a href="https://www.instagram.com/champagneang/" target="_blank">instagram.com/champagneang</a></td>
+          <td class="empty">Check bio</td>
+          <td>~5.7K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Positivity, food, lifestyle</td>
+          <td>Warm and upbeat tone — great for a feel-good gifted collab</td>
+        </tr>
+        <tr>
+          <td class="num">28</td>
+          <td>Sarah Smart</td>
+          <td>@sarahpsmart</td>
+          <td><a href="https://www.instagram.com/sarahpsmart/" target="_blank">instagram.com/sarahpsmart</a></td>
+          <td class="empty">Check bio</td>
+          <td>~11K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Travel, events, hospitality</td>
+          <td>Toronto events and local experiences — pottery class collab or gifted product</td>
+        </tr>
+        <tr>
+          <td class="num">29</td>
+          <td>Pauline</td>
+          <td>@outwithpauline</td>
+          <td><a href="https://www.instagram.com/outwithpauline/" target="_blank">instagram.com/outwithpauline</a></td>
+          <td>hi@brandglowup.com</td>
+          <td>~1.8K</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Business, tech, events</td>
+          <td>Toronto events, nano with email — low barrier to collab</td>
+        </tr>
+
+        <!-- FASHION & GENERAL LIFESTYLE -->
+        <tr class="cat-row"><td colspan="9">Fashion &amp; General Lifestyle — Toronto</td></tr>
+
+        <tr>
+          <td class="num">30</td>
+          <td>Isabel Tang</td>
+          <td>@belnotbella</td>
+          <td><a href="https://www.instagram.com/belnotbella/" target="_blank">instagram.com/belnotbella</a></td>
+          <td>isabelxtang@gmail.com</td>
+          <td>~34.7K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Fashion + lifestyle</td>
+          <td>Email available, active Toronto creator — lifestyle gifting works well</td>
+        </tr>
+        <tr>
+          <td class="num">31</td>
+          <td>Victoria Ezike</td>
+          <td>@victoriaezike</td>
+          <td><a href="https://www.instagram.com/victoriaezike/" target="_blank">instagram.com/victoriaezike</a></td>
+          <td class="empty">Check bio</td>
+          <td>~23.5K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Lifestyle</td>
+          <td>Active mid-size Toronto lifestyle creator — good for broader reach</td>
+        </tr>
+        <tr>
+          <td class="num">32</td>
+          <td>Betty Lam</td>
+          <td>@itsbettylam</td>
+          <td><a href="https://www.instagram.com/itsbettylam/" target="_blank">instagram.com/itsbettylam</a></td>
+          <td class="empty">Check bio</td>
+          <td>~16.6K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Lifestyle</td>
+          <td>Regular posting, local Toronto audience — reliable collab partner</td>
+        </tr>
+        <tr>
+          <td class="num">33</td>
+          <td>Maryna Kushkova</td>
+          <td>@maryna_kushkova</td>
+          <td><a href="https://www.instagram.com/maryna_kushkova/" target="_blank">instagram.com/maryna_kushkova</a></td>
+          <td class="empty">Check bio</td>
+          <td>~19K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Aesthetic lifestyle</td>
+          <td>Aesthetic content — works well for product-in-lifestyle photography</td>
+        </tr>
+        <tr>
+          <td class="num">34</td>
+          <td>Crystal Lee</td>
+          <td>@simplycrystallee</td>
+          <td><a href="https://www.instagram.com/simplycrystallee/" target="_blank">instagram.com/simplycrystallee</a></td>
+          <td class="empty">Check bio</td>
+          <td>~11.8K</td>
+          <td><span class="badge micro">Micro</span></td>
+          <td>Fashion, style, entrepreneurship</td>
+          <td>Small biz + style audience — can connect with minipottery as a local brand story</td>
+        </tr>
+        <tr>
+          <td class="num">35</td>
+          <td>Ana Steiu</td>
+          <td>@anasteiu</td>
+          <td><a href="https://www.instagram.com/anasteiu/" target="_blank">instagram.com/anasteiu</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, fitness, wellness, lifestyle</td>
+          <td>Wellness + lifestyle — minipottery as a mindful creative hobby angle</td>
+        </tr>
+        <tr>
+          <td class="num">36</td>
+          <td>Courtney</td>
+          <td>@closetcrusader</td>
+          <td><a href="https://www.instagram.com/closetcrusader/" target="_blank">instagram.com/closetcrusader</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion + beauty (30+ audience)</td>
+          <td>Mature lifestyle audience — pottery as a thoughtful, creative hobby for adults</td>
+        </tr>
+        <tr>
+          <td class="num">37</td>
+          <td>Grace Arhin</td>
+          <td>@thegracearhin</td>
+          <td><a href="https://www.instagram.com/thegracearhin/" target="_blank">instagram.com/thegracearhin</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Multi-interest creator, photo/video</td>
+          <td>Multi-interest Toronto creator — open to diverse collabs</td>
+        </tr>
+        <tr>
+          <td class="num">38</td>
+          <td>Zeynab</td>
+          <td>@zey.ca</td>
+          <td><a href="https://www.instagram.com/zey.ca/" target="_blank">instagram.com/zey.ca</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion + lifestyle</td>
+          <td>Toronto lifestyle creator, fashion-focused — gifting collab opportunity</td>
+        </tr>
+        <tr>
+          <td class="num">39</td>
+          <td>Zeba Khan</td>
+          <td>@ellaprettyblog</td>
+          <td><a href="https://www.instagram.com/ellaprettyblog/" target="_blank">instagram.com/ellaprettyblog</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Beauty, styling, lifestyle (also blogs)</td>
+          <td>Blogger + creator — can write about minipottery on multiple platforms</td>
+        </tr>
+        <tr>
+          <td class="num">40</td>
+          <td>Melanie Kosev</td>
+          <td>@melaniekosev</td>
+          <td><a href="https://www.instagram.com/melaniekosev/" target="_blank">instagram.com/melaniekosev</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, travel, beauty, makeup</td>
+          <td>Fashion + beauty Toronto creator — pottery as a unique lifestyle accessory</td>
+        </tr>
+        <tr>
+          <td class="num">41</td>
+          <td>Kassondra</td>
+          <td>@stylewithgold</td>
+          <td><a href="https://www.instagram.com/stylewithgold/" target="_blank">instagram.com/stylewithgold</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Minimal fashion, luxury lifestyle</td>
+          <td>Minimal luxury aesthetic — mini pottery fits as an artisan home object</td>
+        </tr>
+        <tr>
+          <td class="num">42</td>
+          <td>Ellycia H.</td>
+          <td>@ellyciaaaa</td>
+          <td><a href="https://www.instagram.com/ellyciaaaa/" target="_blank">instagram.com/ellyciaaaa</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Modeling, lifestyle, adventure</td>
+          <td>Adventure lifestyle — pottery as a creative "grounding" contrast to outdoor content</td>
+        </tr>
+        <tr>
+          <td class="num">43</td>
+          <td>Emily Oliviera</td>
+          <td>@_emoliveira</td>
+          <td><a href="https://www.instagram.com/_emoliveira/" target="_blank">instagram.com/_emoliveira</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, beauty, lifestyle</td>
+          <td>Toronto lifestyle nano — low-cost collab for authentic reach</td>
+        </tr>
+        <tr>
+          <td class="num">44</td>
+          <td>Danielle Alexandra</td>
+          <td>@allthingscoveted</td>
+          <td><a href="https://www.instagram.com/allthingscoveted/" target="_blank">instagram.com/allthingscoveted</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Beauty, fashion, lifestyle, travel</td>
+          <td>Coveted things — handmade minipottery piece would fit as a "must-have" item</td>
+        </tr>
+        <tr>
+          <td class="num">45</td>
+          <td>Bradley Blaylock</td>
+          <td>@bradleyblaylock</td>
+          <td><a href="https://www.instagram.com/bradleyblaylock/" target="_blank">instagram.com/bradleyblaylock</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, lifestyle, marketing</td>
+          <td>Marketing-savvy Toronto creator — good collab partner who understands brands</td>
+        </tr>
+        <tr>
+          <td class="num">46</td>
+          <td>Tyler Reaume</td>
+          <td>@reaumetyler</td>
+          <td><a href="https://www.instagram.com/reaumetyler/" target="_blank">instagram.com/reaumetyler</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Men's fashion, lifestyle, travel</td>
+          <td>Male lifestyle creator — good for reaching a different audience segment</td>
+        </tr>
+        <tr>
+          <td class="num">47</td>
+          <td>Sergio Roque</td>
+          <td>@mrsergioroque</td>
+          <td><a href="https://www.instagram.com/mrsergioroque/" target="_blank">instagram.com/mrsergioroque</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, events, travel</td>
+          <td>Events + fashion Toronto creator — collab could tie into a Toronto event or market</td>
+        </tr>
+        <tr>
+          <td class="num">48</td>
+          <td>Emily Ferguson</td>
+          <td>@emilyferguson</td>
+          <td><a href="https://www.instagram.com/emilyferguson/" target="_blank">instagram.com/emilyferguson</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, modeling, lifestyle</td>
+          <td>Modeling + lifestyle nano — product photography collab potential</td>
+        </tr>
+        <tr>
+          <td class="num">49</td>
+          <td>Rachel DaCosta</td>
+          <td>@rach.dacosta</td>
+          <td><a href="https://www.instagram.com/rach.dacosta/" target="_blank">instagram.com/rach.dacosta</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Fashion, lifestyle, travel, self-love</td>
+          <td>Self-love + lifestyle — mini pottery as a self-care creative activity angle</td>
+        </tr>
+        <tr>
+          <td class="num">50</td>
+          <td>Emily Adams</td>
+          <td>@emadamsxo</td>
+          <td><a href="https://www.instagram.com/emadamsxo/" target="_blank">instagram.com/emadamsxo</a></td>
+          <td class="empty">Check bio</td>
+          <td class="empty">Small</td>
+          <td><span class="badge nano">Nano</span></td>
+          <td>Celebrity-inspired fashion, lifestyle</td>
+          <td>Toronto lifestyle creator — unique, artisan pottery could fit her aspirational content</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Minipottery Studio &nbsp;·&nbsp; Toronto Influencer Tracker &nbsp;·&nbsp; May 2026</p>
+  <p style="margin-top:4px;">Always verify follower counts and emails before reaching out — profiles change often.</p>
+</footer>
+
+<script>
+  function showTab(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
