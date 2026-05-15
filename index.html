@@ -137,6 +137,90 @@
     /* row number */
     .num { color: #b09080; font-size: 0.8rem; }
 
+    /* ── Editable cells ── */
+    td[contenteditable="true"] {
+      cursor: text;
+      transition: background 0.15s, box-shadow 0.15s;
+      border-radius: 3px;
+    }
+    td[contenteditable="true"]:hover {
+      background: #fff5e8 !important;
+      box-shadow: inset 0 0 0 1px #e0b890;
+    }
+    td[contenteditable="true"]:focus {
+      background: #fffaf3 !important;
+      box-shadow: inset 0 0 0 2px #b07050;
+      outline: none;
+    }
+
+    /* ── Save indicator toast ── */
+    #save-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #2d6a4f;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    #save-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Action buttons ── */
+    .actions {
+      max-width: 1100px;
+      margin: 0 auto 16px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      padding: 8px 16px;
+      border: 1px solid #c49a7a;
+      background: #fff;
+      color: #7a4f3a;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .action-btn:hover {
+      background: #fdf0e8;
+    }
+    .action-btn.danger {
+      color: #a04030;
+      border-color: #d0a090;
+    }
+    .action-btn.danger:hover {
+      background: #fdeae5;
+    }
+
+    /* ── Edit hint banner ── */
+    .edit-hint {
+      max-width: 1100px;
+      margin: 0 auto 14px;
+      background: #e8f5ee;
+      border-left: 4px solid #2d6a4f;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #1e5040;
+      line-height: 1.5;
+    }
+    .edit-hint strong { color: #144030; }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -153,11 +237,26 @@
   <p>@minipotterystudio &nbsp;·&nbsp; Toronto &amp; North York &nbsp;·&nbsp; Updated May 2026</p>
 </header>
 
+<!-- EDIT HINT -->
+<div class="edit-hint">
+  <strong>✏️ Click any cell to edit it.</strong> Changes save automatically in your browser as you type. Use the same browser to keep your edits. Click <strong>Download CSV</strong> to keep a permanent backup file.
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="actions">
+  <button class="action-btn" onclick="downloadCSV('previous')">⬇ Download Sheet 1 (CSV)</button>
+  <button class="action-btn" onclick="downloadCSV('new')">⬇ Download Sheet 2 (CSV)</button>
+  <button class="action-btn danger" onclick="clearAllEdits()">↺ Reset my edits</button>
+</div>
+
 <!-- TABS -->
 <div class="tabs">
   <button class="tab-btn active" onclick="showTab('previous')">📋 Sheet 1 — Previous Collaborators</button>
   <button class="tab-btn" onclick="showTab('new')">🔍 Sheet 2 — 40 New Creators to Reach Out To</button>
 </div>
+
+<!-- SAVE TOAST -->
+<div id="save-toast">✓ Saved</div>
 
 <!-- ══════════════════════════════════════════
      SHEET 1 — Previous Collaborators
@@ -813,12 +912,124 @@
 </footer>
 
 <script>
+  // ────────────────────────────────────────
+  // Tab switching
+  // ────────────────────────────────────────
   function showTab(name) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');
     event.target.classList.add('active');
   }
+
+  // ────────────────────────────────────────
+  // Live edit + auto-save
+  // ────────────────────────────────────────
+  const STORAGE_PREFIX = 'minipottery-tracker-v1-';
+
+  function initEditableCells() {
+    document.querySelectorAll('.panel').forEach(panel => {
+      const panelId = panel.id;
+      const rows = panel.querySelectorAll('tbody tr');
+      rows.forEach((row, rowIndex) => {
+        if (row.classList.contains('cat-row')) return;
+        const cells = row.querySelectorAll('td');
+        cells.forEach((cell, cellIndex) => {
+          if (cell.classList.contains('num')) return;
+          const cellId = `${panelId}-r${rowIndex}-c${cellIndex}`;
+          cell.setAttribute('data-cell-id', cellId);
+          cell.setAttribute('contenteditable', 'true');
+          cell.setAttribute('spellcheck', 'false');
+
+          const savedValue = localStorage.getItem(STORAGE_PREFIX + cellId);
+          if (savedValue !== null) {
+            cell.innerHTML = savedValue;
+            cell.classList.remove('empty');
+          }
+
+          cell.addEventListener('input', () => {
+            localStorage.setItem(STORAGE_PREFIX + cellId, cell.innerHTML);
+            showSaveToast();
+          });
+
+          cell.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand('insertText', false, text);
+          });
+        });
+      });
+    });
+  }
+
+  // ────────────────────────────────────────
+  // Save toast (debounced)
+  // ────────────────────────────────────────
+  let toastTimer = null;
+  function showSaveToast() {
+    const toast = document.getElementById('save-toast');
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1200);
+  }
+
+  // ────────────────────────────────────────
+  // CSV export
+  // ────────────────────────────────────────
+  function downloadCSV(panelName) {
+    const panel = document.getElementById('panel-' + panelName);
+    const table = panel.querySelector('table');
+    const rows = [];
+
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => csvEscape(th.innerText.trim()));
+    rows.push(headers.join(','));
+
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      if (tr.classList.contains('cat-row')) {
+        const catText = tr.innerText.trim();
+        rows.push(csvEscape('── ' + catText + ' ──'));
+        return;
+      }
+      const cols = Array.from(tr.querySelectorAll('td')).map(td => csvEscape(td.innerText.trim()));
+      rows.push(cols.join(','));
+    });
+
+    const csv = rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const filename = panelName === 'previous'
+      ? 'minipottery-sheet1-collaborators.csv'
+      : 'minipottery-sheet2-new-creators.csv';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function csvEscape(value) {
+    if (value == null) return '';
+    if (/[",\n]/.test(value)) {
+      return '"' + value.replace(/"/g, '""') + '"';
+    }
+    return value;
+  }
+
+  // ────────────────────────────────────────
+  // Clear all edits
+  // ────────────────────────────────────────
+  function clearAllEdits() {
+    if (!confirm("This will erase all your edits and reload the original list. Are you sure?")) return;
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k);
+    });
+    location.reload();
+  }
+
+  // Init on load
+  document.addEventListener('DOMContentLoaded', initEditableCells);
 </script>
 
 </body>
