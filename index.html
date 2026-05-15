@@ -221,6 +221,101 @@
     }
     .edit-hint strong { color: #144030; }
 
+    /* ── Sync bar (GitHub sharing) ── */
+    .sync-bar {
+      max-width: 1100px;
+      margin: 0 auto 14px;
+      background: #fff;
+      border: 1px solid #d8c8b8;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .sync-status {
+      flex: 1;
+      min-width: 220px;
+      font-size: 0.88rem;
+      color: #5a4030;
+      font-weight: 600;
+    }
+    .sync-status .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .sync-status.green .dot   { background: #2d6a4f; }
+    .sync-status.yellow .dot  { background: #d09020; }
+    .sync-status.red .dot     { background: #c04030; }
+    .sync-status .meta {
+      display: block;
+      font-size: 0.75rem;
+      color: #998070;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    .sync-btn {
+      padding: 8px 14px;
+      border: 1px solid #c49a7a;
+      background: #fff;
+      color: #7a4f3a;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .sync-btn.primary {
+      background: #7a4f3a;
+      color: #fff;
+      border-color: #7a4f3a;
+    }
+    .sync-btn:hover { opacity: 0.85; }
+    .sync-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ── Modal ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-bg.show { display: flex; }
+    .modal {
+      background: #fff;
+      padding: 28px 32px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal h2 { color: #7a4f3a; margin-bottom: 14px; font-size: 1.2rem; }
+    .modal ol { margin: 10px 0 16px 20px; line-height: 1.7; font-size: 0.9rem; }
+    .modal ol code {
+      background: #f5ede5; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem;
+    }
+    .modal a { color: #7a4f3a; font-weight: 600; }
+    .modal input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #d8c8b8;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: monospace;
+      margin: 8px 0 16px;
+    }
+    .modal .btn-row { display: flex; gap: 8px; justify-content: flex-end; }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -237,9 +332,41 @@
   <p>@minipotterystudio &nbsp;·&nbsp; Toronto &amp; North York &nbsp;·&nbsp; Updated May 2026</p>
 </header>
 
+<!-- GITHUB SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-status red" id="sync-status">
+    <span class="dot"></span><span id="sync-text">Not connected to GitHub</span>
+    <span class="meta" id="sync-meta">Connect once to share edits with Nick</span>
+  </div>
+  <button class="sync-btn" id="btn-setup" onclick="openSetup()">🔗 Connect GitHub</button>
+  <button class="sync-btn" id="btn-refresh" onclick="loadFromGithub()">⟳ Refresh</button>
+  <button class="sync-btn primary" id="btn-save" onclick="saveToGithub()" disabled>💾 Save to GitHub</button>
+</div>
+
 <!-- EDIT HINT -->
 <div class="edit-hint">
-  <strong>✏️ Click any cell to edit it.</strong> Changes save automatically in your browser as you type. Use the same browser to keep your edits. Click <strong>Download CSV</strong> to keep a permanent backup file.
+  <strong>✏️ Click any cell to edit it.</strong> Changes save automatically in your browser as you type. Click <strong>💾 Save to GitHub</strong> to share with Nick. Click <strong>Download CSV</strong> for a permanent backup.
+</div>
+
+<!-- SETUP MODAL -->
+<div class="modal-bg" id="setup-modal">
+  <div class="modal">
+    <h2>🔗 Connect to GitHub</h2>
+    <p style="font-size:0.9rem; line-height:1.6; color:#5a4030;">To save your edits so Nick can see them, you need a GitHub <strong>Personal Access Token</strong>. It's a one-time setup.</p>
+    <ol>
+      <li>Open: <a href="https://github.com/settings/tokens/new?description=Minipottery%20Tracker&scopes=public_repo" target="_blank">github.com/settings/tokens/new</a> (opens in new tab)</li>
+      <li>Make sure "<code>public_repo</code>" is checked under <strong>Select scopes</strong></li>
+      <li>Scroll down, click <strong>Generate token</strong></li>
+      <li>Copy the token (starts with <code>ghp_…</code>) — you only see it once!</li>
+      <li>Paste it here:</li>
+    </ol>
+    <input type="text" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
+    <div class="btn-row">
+      <button class="sync-btn" onclick="closeSetup()">Cancel</button>
+      <button class="sync-btn primary" onclick="saveToken()">Save Token</button>
+    </div>
+    <p style="font-size:0.78rem; color:#998070; margin-top:14px;">🔒 The token stays in your browser only. It's never sent anywhere except to GitHub when you save.</p>
+  </div>
 </div>
 
 <!-- ACTION BUTTONS -->
@@ -1028,8 +1155,209 @@
     location.reload();
   }
 
-  // Init on load
-  document.addEventListener('DOMContentLoaded', initEditableCells);
+  // ════════════════════════════════════════
+  // GitHub Sync
+  // ════════════════════════════════════════
+  const GH_OWNER = 'kizzagtm';
+  const GH_REPO  = 'minipotterystudio';
+  const GH_FILE  = 'data.json';
+  const TOKEN_KEY = 'minipottery-github-token';
+
+  let currentSha = null;
+
+  function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  function openSetup() {
+    const t = getToken();
+    if (t) document.getElementById('token-input').value = t;
+    document.getElementById('setup-modal').classList.add('show');
+  }
+  function closeSetup() {
+    document.getElementById('setup-modal').classList.remove('show');
+  }
+  function saveToken() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) { alert('Please paste your GitHub token first.'); return; }
+    if (!t.startsWith('ghp_') && !t.startsWith('github_pat_')) {
+      if (!confirm("That doesn't look like a GitHub token (should start with 'ghp_' or 'github_pat_'). Save it anyway?")) return;
+    }
+    localStorage.setItem(TOKEN_KEY, t);
+    closeSetup();
+    setStatus('green', 'GitHub connected', 'You can now save edits to GitHub');
+    document.getElementById('btn-save').disabled = false;
+  }
+
+  function setStatus(color, text, meta) {
+    const el = document.getElementById('sync-status');
+    el.className = 'sync-status ' + color;
+    document.getElementById('sync-text').textContent = text;
+    document.getElementById('sync-meta').textContent = meta || '';
+  }
+
+  function updateUnsavedCount() {
+    let count = 0;
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith(STORAGE_PREFIX)) count++;
+    });
+    if (count > 0 && getToken()) {
+      setStatus('yellow', `${count} unsaved edit${count === 1 ? '' : 's'}`, 'Click "Save to GitHub" to share with Nick');
+    } else if (getToken()) {
+      setStatus('green', 'All synced with GitHub', currentSha ? 'Last refreshed just now' : '');
+    }
+  }
+
+  // Pull latest data from GitHub (works for anyone, no auth needed for public repo)
+  async function loadFromGithub() {
+    setStatus('yellow', 'Loading from GitHub…', '');
+    const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Could not fetch');
+      const data = await res.json();
+      applyCells(data.cells || {});
+      // Also fetch the file SHA via API (needed for next save)
+      try {
+        const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+        const apiRes = await fetch(apiUrl, getToken() ? { headers: { Authorization: 'Bearer ' + getToken() } } : {});
+        if (apiRes.ok) {
+          const apiData = await apiRes.json();
+          currentSha = apiData.sha;
+        }
+      } catch (e) { /* sha optional */ }
+
+      const editor = data.lastEditor || 'someone';
+      const when = data.lastUpdated ? new Date(data.lastUpdated).toLocaleString() : 'never';
+      const msg = data.lastUpdated ? `Last saved by ${editor} on ${when}` : 'Empty — be the first to save!';
+      if (getToken()) {
+        setStatus('green', 'Loaded from GitHub', msg);
+      } else {
+        setStatus('red', 'Viewing GitHub version', msg + ' · Connect to edit & save');
+      }
+    } catch (e) {
+      setStatus('red', 'Could not load from GitHub', 'Using your local edits instead');
+    }
+  }
+
+  function applyCells(cellsObj) {
+    Object.entries(cellsObj).forEach(([id, val]) => {
+      const cell = document.querySelector(`[data-cell-id="${id}"]`);
+      if (cell) {
+        cell.innerHTML = val;
+        cell.classList.remove('empty');
+      }
+    });
+  }
+
+  function collectAllCells() {
+    const cells = {};
+    document.querySelectorAll('[data-cell-id]').forEach(td => {
+      const id = td.getAttribute('data-cell-id');
+      cells[id] = td.innerHTML;
+    });
+    return cells;
+  }
+
+  // Push current state to GitHub
+  async function saveToGithub() {
+    const token = getToken();
+    if (!token) { openSetup(); return; }
+
+    setStatus('yellow', 'Saving to GitHub…', '');
+    document.getElementById('btn-save').disabled = true;
+
+    const editorName = prompt('Your name (for the commit history):', localStorage.getItem('minipottery-editor-name') || '') || 'someone';
+    localStorage.setItem('minipottery-editor-name', editorName);
+
+    const payload = {
+      version: 1,
+      lastUpdated: new Date().toISOString(),
+      lastEditor: editorName,
+      cells: collectAllCells()
+    };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+    // Fetch latest SHA first (in case it changed since page load)
+    let sha = currentSha;
+    try {
+      const shaRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`, {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (shaRes.ok) {
+        const shaData = await shaRes.json();
+        sha = shaData.sha;
+      }
+    } catch (e) {}
+
+    const body = {
+      message: `Tracker update by ${editorName} — ${new Date().toLocaleString()}`,
+      content: content
+    };
+    if (sha) body.sha = sha;
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Save failed');
+      }
+      const result = await res.json();
+      currentSha = result.content && result.content.sha;
+      // Clear localStorage edits since they're now on GitHub
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k);
+      });
+      setStatus('green', 'Saved to GitHub ✓', `By ${editorName} just now`);
+      document.getElementById('btn-save').disabled = false;
+    } catch (e) {
+      setStatus('red', 'Save failed', e.message);
+      document.getElementById('btn-save').disabled = false;
+      alert('Could not save to GitHub:\n\n' + e.message + '\n\nCheck your token has "public_repo" scope and try again.');
+    }
+  }
+
+  // ════════════════════════════════════════
+  // Init
+  // ════════════════════════════════════════
+  document.addEventListener('DOMContentLoaded', async () => {
+    initEditableCells();
+
+    // Show connect status
+    if (getToken()) {
+      setStatus('green', 'GitHub connected', 'Loading latest data…');
+      document.getElementById('btn-save').disabled = false;
+    }
+
+    // Always try to load the GitHub version first, then overlay local unsaved edits
+    await loadFromGithub();
+
+    // Re-apply localStorage edits on top (preserves user's in-progress work)
+    document.querySelectorAll('[data-cell-id]').forEach(cell => {
+      const id = cell.getAttribute('data-cell-id');
+      const local = localStorage.getItem(STORAGE_PREFIX + id);
+      if (local !== null) {
+        cell.innerHTML = local;
+        cell.classList.remove('empty');
+      }
+    });
+
+    updateUnsavedCount();
+
+    // Track edits to update the "unsaved" counter
+    document.addEventListener('input', e => {
+      if (e.target.hasAttribute('data-cell-id')) {
+        updateUnsavedCount();
+      }
+    });
+  });
 </script>
 
 </body>
