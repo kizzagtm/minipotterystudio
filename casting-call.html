@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minipottery — Creator Casting Call</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fdf6f0;
+      color: #3a2e28;
+      padding: 32px 20px 60px;
+      line-height: 1.55;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    header h1 { font-size: 2rem; color: #7a4f3a; letter-spacing: 1px; }
+    header .subtitle { margin-top: 8px; font-size: 0.95rem; color: #9a7860; }
+    header .deadline {
+      display: inline-block;
+      margin-top: 14px;
+      background: #7a4f3a;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    section h2 {
+      color: #7a4f3a;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #f0e0d0;
+      padding-bottom: 10px;
+    }
+    section h3 {
+      color: #5a3820;
+      font-size: 1.05rem;
+      margin: 20px 0 10px;
+    }
+
+    /* Calendar */
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .cal-card {
+      background: #fdf6f0;
+      border-left: 4px solid #c49a7a;
+      padding: 14px 16px;
+      border-radius: 6px;
+    }
+    .cal-card .when {
+      font-size: 0.75rem;
+      color: #b07050;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .cal-card .what { font-size: 0.95rem; margin-top: 4px; color: #3a2e28; }
+
+    /* Asset card */
+    .asset {
+      background: #fdf6f0;
+      border-left: 4px solid #7a4f3a;
+      padding: 18px 22px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .asset .label {
+      display: inline-block;
+      background: #7a4f3a;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .asset h4 { color: #5a3820; font-size: 1.05rem; margin-bottom: 8px; }
+    .asset ul, .asset ol { margin: 8px 0 8px 22px; }
+    .asset li { margin: 4px 0; font-size: 0.92rem; }
+
+    .copy-block {
+      background: #fff8f3;
+      border: 1px dashed #c49a7a;
+      padding: 14px 16px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-family: 'Georgia', serif;
+      color: #3a2e28;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+    }
+    .caption {
+      background: #fff;
+      border: 1px solid #e8d5c4;
+      padding: 14px 16px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-style: italic;
+      color: #5a3820;
+      font-size: 0.92rem;
+    }
+
+    /* Form blocks */
+    .form-block {
+      background: #fdfaf6;
+      border: 1px solid #e8d5c4;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+    .form-block .q-label {
+      font-size: 0.72rem;
+      color: #b07050;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .form-block .q-text { font-weight: 600; font-size: 1rem; color: #3a2e28; margin-bottom: 6px; }
+    .form-block .q-help { font-size: 0.85rem; color: #7a6050; margin-bottom: 8px; font-style: italic; }
+    .form-block .q-options { font-size: 0.9rem; color: #4a3828; margin-left: 12px; }
+    .form-block .q-options li { margin: 4px 0; list-style: disc; }
+    .badge-type {
+      display: inline-block;
+      background: #d4edda;
+      color: #1e6040;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-type.required { background: #ffd6d6; color: #8a1020; }
+
+    .faq {
+      background: #fff8f3;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 8px 0;
+      border-left: 3px solid #b07050;
+    }
+    .faq .q { font-weight: 700; color: #5a3820; font-size: 0.95rem; }
+    .faq .a { margin-top: 4px; font-size: 0.92rem; color: #3a2e28; }
+
+    .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .pill {
+      background: #f0e0d0;
+      color: #5a3820;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .note {
+      background: #fff8e0;
+      border-left: 4px solid #d09020;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #6a5020;
+      margin: 14px 0;
+    }
+    .note strong { color: #4a3010; }
+
+    footer {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 0.78rem;
+      color: #b09080;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Minipottery Creator Casting Call</h1>
+  <p class="subtitle">Open call for Toronto creators · 1 Reel + 3 Photos + Google Form copy</p>
+  <div class="deadline">📅 Submissions close June 20, 2026</div>
+</header>
+
+<div class="container">
+
+<!-- ════════════════════ POSTING CALENDAR ════════════════════ -->
+<section>
+  <h2>📅 Posting Calendar (2.5 weeks)</h2>
+  <p style="font-size:0.92rem;color:#5a4030;">Today is June 2, 2026. Submissions close June 20. Suggested rollout:</p>
+  <div class="calendar">
+    <div class="cal-card">
+      <div class="when">Week 1 · Jun 3</div>
+      <div class="what"><strong>Drop the Reel</strong> + add the Google Form link to your IG bio</div>
+    </div>
+    <div class="cal-card">
+      <div class="when">Week 1 · Jun 5</div>
+      <div class="what"><strong>Photo 1</strong> — The big announcement</div>
+    </div>
+    <div class="cal-card">
+      <div class="when">Week 2 · Jun 10</div>
+      <div class="what"><strong>Photo 2</strong> — What's in it for them + what you ask</div>
+    </div>
+    <div class="cal-card">
+      <div class="when">Week 2 · Jun 14</div>
+      <div class="what"><strong>Story reminder</strong> — "5 days left, link in bio"</div>
+    </div>
+    <div class="cal-card">
+      <div class="when">Week 3 · Jun 17</div>
+      <div class="what"><strong>Photo 3</strong> — Examples + final call</div>
+    </div>
+    <div class="cal-card">
+      <div class="when">Week 3 · Jun 19</div>
+      <div class="what"><strong>Story countdown</strong> — "Last day!"</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ REEL ════════════════════ -->
+<section>
+  <h2>🎥 The Reel (1 video)</h2>
+  <p style="font-size:0.92rem;color:#5a4030;">Lead with this — Reels get pushed by the algorithm more than photos. Aim for 15–25 seconds.</p>
+
+  <div class="asset">
+    <span class="label">Reel 1 — The Casting Call</span>
+    <h4>Concept: ASMR pottery moment → bold call-to-action</h4>
+
+    <h3>Shot list (15–25 sec)</h3>
+    <ol>
+      <li><strong>0–3s · Hook:</strong> Close-up of clay being shaped into a tiny mug or matcha bowl. Hands only. Slow, satisfying ASMR-style. <em>This is the scroll-stopper.</em></li>
+      <li><strong>3–6s:</strong> Pull back to show the finished mini piece on a wooden board, with the studio in soft blur behind.</li>
+      <li><strong>6–10s:</strong> Quick cuts of past creators having fun at a class (laughing with friends, painting, glazing). Use existing content if you have it.</li>
+      <li><strong>10–14s:</strong> One smiling creator holding their finished piece, looking proud.</li>
+      <li><strong>14–22s:</strong> Final mini piece beauty shot — held in hand, well-lit, against a warm background.</li>
+    </ol>
+
+    <h3>Text overlays (on-screen)</h3>
+    <div class="copy-block">📣 Calling Toronto creators!
+
+Get a free class ✨
+Post 1 Reel + 1 TikTok 🎥
+
+Apply by June 20 → link in bio</div>
+
+    <h3>Audio</h3>
+    <p style="font-size:0.92rem;">Pick a <strong>trending calm/aesthetic audio</strong> on Instagram Reels (search "aesthetic" or "soft trending" in Reels audio library). Avoid loud or chaotic sounds — match the cozy studio vibe.</p>
+
+    <h3>Caption</h3>
+    <div class="caption">📣 We're looking for Toronto creators to join us for a free pottery class!
+
+Make a tiny matcha bowl, a mini mug, ceramic jewelry, or come on a clay date with someone you love 🤎
+
+In exchange, share the experience with your audience — 1 Reel on Instagram + 1 TikTok, posted within 3 weeks (when your pieces are ready 🪴).
+
+Bring a friend, a date, or fly solo. We just want to see you making something beautiful with your hands.
+
+Apply by June 20 — link in bio 🔗
+
+#torontocreators #torontopottery #minipotterystudio #torontothingstodo #torontoinfluencers</div>
+  </div>
+</section>
+
+<!-- ════════════════════ PHOTOS ════════════════════ -->
+<section>
+  <h2>📸 The 3 Photos</h2>
+  <p style="font-size:0.92rem;color:#5a4030;">Post in this order. Each builds on the last — Hook → Pitch → Proof + CTA.</p>
+
+  <!-- PHOTO 1 -->
+  <div class="asset">
+    <span class="label">Photo 1 · Jun 5 — The Hook</span>
+    <h4>Concept: Bold announcement on a beautiful background</h4>
+
+    <h3>What's in the photo</h3>
+    <ul>
+      <li>A single beautifully-lit mini pottery piece on a warm-toned background (cream, beige, or terracotta)</li>
+      <li>Soft natural light from the side (window light works great)</li>
+      <li>Plenty of empty space around the piece for text overlay</li>
+    </ul>
+
+    <h3>Text overlay</h3>
+    <div class="copy-block">📣 CALLING TORONTO CREATORS
+
+We want YOU to join us
+in the studio ✨
+
+(yes, the class is on us)
+
+→ Apply by June 20
+Link in bio</div>
+
+    <h3>Caption</h3>
+    <div class="caption">We're opening up our studio to Toronto creators 🤎
+
+Free class + your finished pottery to keep — in exchange for 1 Reel + 1 TikTok showing off your experience.
+
+Solo, with a friend, or on a clay date — your call.
+
+Apply by June 20. Link in bio 🔗</div>
+  </div>
+
+  <!-- PHOTO 2 -->
+  <div class="asset">
+    <span class="label">Photo 2 · Jun 10 — The Pitch</span>
+    <h4>Concept: Side-by-side — what you get vs. what we ask</h4>
+
+    <h3>What's in the photo</h3>
+    <ul>
+      <li><strong>Two-panel layout:</strong> left = "WHAT YOU GET", right = "WHAT WE ASK"</li>
+      <li>Left panel: photo of someone smiling holding finished pottery</li>
+      <li>Right panel: photo of phone showing a TikTok/Reel being recorded in the studio</li>
+      <li>Brand colors: warm cream + terracotta + brown</li>
+    </ul>
+
+    <h3>Text overlay</h3>
+    <div class="copy-block">YOU GET 🎁                    WE ASK 🎬
+
+• Free class             • 1 Reel on Instagram
+  ($79–$200 value)       • 1 TikTok
+• Pottery to keep        • 60+ seconds
+• A fun content idea     • Posted within 3 weeks
+                           (when your pottery is ready)</div>
+
+    <h3>Caption</h3>
+    <div class="caption">Here's the deal 👇
+
+You get → a free class (handpick the one you want), the pottery you make, and content your audience will love.
+
+We get → 1 Reel + 1 TikTok showing your experience, posted within 3 weeks of your class (when your finished pieces are ready to take home 🪴).
+
+That's it. No script, no scripted lines. Just real, beautiful you in the studio.
+
+Apply by June 20 → link in bio</div>
+  </div>
+
+  <!-- PHOTO 3 -->
+  <div class="asset">
+    <span class="label">Photo 3 · Jun 17 — The Final Call</span>
+    <h4>Concept: 4-thumbnail grid of past creator reels + countdown CTA</h4>
+
+    <h3>What's in the photo</h3>
+    <ul>
+      <li>2x2 grid of past creator Reels — screenshots of the most beautiful frames</li>
+      <li>If you don't have 4 past creator Reels yet, use 4 of your own most beautiful studio shots instead</li>
+      <li>Bottom of the image: bold deadline text</li>
+    </ul>
+
+    <h3>Text overlay</h3>
+    <div class="copy-block">SEE THE VIBE 👀
+
+(from past Mini Pottery creators)
+
+──────────────────
+
+⏰ ONLY 3 DAYS LEFT
+Apply by June 20
+Link in bio</div>
+
+    <h3>Caption</h3>
+    <div class="caption">3 days left to apply 👀
+
+This is the kind of content our past creators have made — soft, satisfying, and very Toronto.
+
+Pick your class. Tell us your angle (solo day, date night, with a friend, crafty Toronto adventure). We'll match you to a time that works.
+
+⏰ Deadline: June 20 at 11:59 PM
+🔗 Link in bio
+
+#torontopottery #torontocreators #minipotterystudio</div>
+  </div>
+</section>
+
+<!-- ════════════════════ FORM COPY ════════════════════ -->
+<section>
+  <h2>📋 Google Form Copy (Ready to Paste)</h2>
+  <p style="font-size:0.92rem;color:#5a4030;">Open <a href="https://forms.new" target="_blank" style="color:#7a4f3a;font-weight:600;">forms.new</a> in a new tab and paste each section below into a new question. The <span class="badge-type">Type</span> badge tells you which question type to pick in Google Forms.</p>
+
+  <div class="note">
+    <strong>Google Forms tip:</strong> After creating the form, click the "Responses" tab and connect it to a Google Sheet — you'll see every submission in a tidy spreadsheet.
+  </div>
+
+  <!-- FORM TITLE & DESCRIPTION -->
+  <h3>Form Title</h3>
+  <div class="copy-block">Be a Mini Pottery Creator ✨ — Toronto Casting Call</div>
+
+  <h3>Form Description (under the title)</h3>
+  <div class="copy-block">We're looking for Toronto creators to share what we do at Mini Pottery Studio 🤎
+
+The deal: a free class (you pick it) → 1 Reel on Instagram + 1 TikTok, posted within 3 weeks of your class (when your finished pottery is ready to take home).
+
+📅 Submissions close: June 20, 2026 at 11:59 PM
+📍 Studio in Toronto
+🔗 IG: @minipotterystudio</div>
+
+  <!-- FAQ SECTION -->
+  <h3>FAQs (paste as a "Section" with title "Read this first 👇")</h3>
+  <div class="form-block">
+    <div class="faq">
+      <div class="q">Q: Can I bring someone with me?</div>
+      <div class="a">A: Yes! Bring one other person to help you film — ideally a friend, partner, or date you'd love to feature in your content. We want to celebrate moments shared with people, not just solo shots.</div>
+    </div>
+    <div class="faq">
+      <div class="q">Q: How long does the Reel need to be?</div>
+      <div class="a">A: At least 60 seconds. No max — go as long as the story is good. We don't need it scripted; just authentic.</div>
+    </div>
+    <div class="faq">
+      <div class="q">Q: When do I post the Reel and TikTok?</div>
+      <div class="a">A: Within 3 weeks of your class. That's when your finished pottery is ready to take home (after kiln-firing), so your video can show both the making AND the finished piece 🪴</div>
+    </div>
+    <div class="faq">
+      <div class="q">Q: Can I see examples?</div>
+      <div class="a">A: Yes! Check our Instagram <strong>@minipotterystudio</strong> — past creator collabs are tagged. The vibe of Clay With Me's creator content is also a great reference: soft, satisfying, very Toronto. <em>[Add specific reel links here before publishing]</em></div>
+    </div>
+    <div class="faq">
+      <div class="q">Q: Do I have to be a "big" creator to apply?</div>
+      <div class="a">A: No! We love working with nano and micro creators (1K–50K followers) who have engaged audiences. Authentic > big.</div>
+    </div>
+    <div class="faq">
+      <div class="q">Q: Where is the studio?</div>
+      <div class="a">A: Downtown Toronto. We'll send the address once you're confirmed.</div>
+    </div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <h3>Form Questions (one block = one question)</h3>
+
+  <div class="form-block">
+    <div class="q-label">Question 1</div>
+    <div class="q-text">Your Name <span class="badge-type required">Short answer · Required</span></div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 2</div>
+    <div class="q-text">Your Email <span class="badge-type required">Short answer · Required</span></div>
+    <div class="q-help">We'll use this to confirm your class booking.</div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 3</div>
+    <div class="q-text">Your Instagram Handle <span class="badge-type required">Short answer · Required</span></div>
+    <div class="q-help">Format: @yourhandle</div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 4</div>
+    <div class="q-text">Your TikTok Handle <span class="badge-type">Short answer · Optional</span></div>
+    <div class="q-help">Format: @yourhandle (skip if you don't have one)</div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 5</div>
+    <div class="q-text">Which classes are you interested in? (Pick all that apply) <span class="badge-type required">Checkboxes · Required</span></div>
+    <ul class="q-options">
+      <li>Taster Class — Intro to Mini Pottery ($99)</li>
+      <li>Clay Date for Two ($200 / couple)</li>
+      <li>2-week Matcha Set — Handbuilding + Glazing ($159)</li>
+      <li>Ceramic Jewelry ($99)</li>
+      <li>Open Studio Drop-in ($45)</li>
+    </ul>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 6</div>
+    <div class="q-text">What angle would you take for your video? <span class="badge-type required">Multiple choice · Required</span></div>
+    <div class="q-help">Pick the one that best fits your content style</div>
+    <ul class="q-options">
+      <li>Solo creative date — me-time, self-care, slow living</li>
+      <li>Come with a friend — girls' day / friend hangout</li>
+      <li>Come with a date — date night idea</li>
+      <li>Crafty Toronto adventure — "things to do in Toronto" angle</li>
+      <li>Other (please describe in the next question)</li>
+    </ul>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 7</div>
+    <div class="q-text">Tell us more about your video idea (optional) <span class="badge-type">Paragraph · Optional</span></div>
+    <div class="q-help">Anything you want us to know about the concept, your style, or who you'd bring</div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 8</div>
+    <div class="q-text">What dates work best for you? <span class="badge-type required">Checkboxes · Required</span></div>
+    <div class="q-help">Pick all that apply — we'll confirm a specific date with you</div>
+    <ul class="q-options">
+      <li>Week of June 23 (Mon–Sun)</li>
+      <li>Week of June 30 (Mon–Sun)</li>
+      <li>Week of July 7 (Mon–Sun)</li>
+      <li>Week of July 14 (Mon–Sun)</li>
+      <li>Flexible — work around my schedule</li>
+    </ul>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 9</div>
+    <div class="q-text">What time of day works best? <span class="badge-type required">Checkboxes · Required</span></div>
+    <ul class="q-options">
+      <li>Weekday morning</li>
+      <li>Weekday afternoon</li>
+      <li>Weekday evening</li>
+      <li>Weekend morning</li>
+      <li>Weekend afternoon</li>
+    </ul>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 10</div>
+    <div class="q-text">Are you bringing someone with you? <span class="badge-type">Multiple choice · Required</span></div>
+    <ul class="q-options">
+      <li>Yes — a friend</li>
+      <li>Yes — a partner / date</li>
+      <li>Yes — someone else (describe in the next question)</li>
+      <li>No, going solo</li>
+    </ul>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 11</div>
+    <div class="q-text">Link to your best recent Reel or TikTok <span class="badge-type">Short answer · Optional</span></div>
+    <div class="q-help">So we can get a feel for your style. Paste any link.</div>
+  </div>
+
+  <div class="form-block">
+    <div class="q-label">Question 12</div>
+    <div class="q-text">Anything else we should know? <span class="badge-type">Paragraph · Optional</span></div>
+  </div>
+
+  <h3>Confirmation message (shown after submit)</h3>
+  <div class="copy-block">Thanks for applying! 🤎
+
+We're reviewing every submission and will email you by June 25 with next steps. If you're selected, we'll coordinate a class date that works for you.
+
+In the meantime, follow us on IG @minipotterystudio for behind-the-scenes!</div>
+</section>
+
+<!-- ════════════════════ AFTER SUBMISSIONS ════════════════════ -->
+<section>
+  <h2>✉️ After Submissions Close (Jun 21+)</h2>
+  <p style="font-size:0.92rem;color:#5a4030;">Once submissions are in, you'll review them in your Google Sheet and email each selected creator a quick "you're in" message. Here's a template you can copy.</p>
+
+  <h3>Email template — "You're selected" 🎉</h3>
+  <div class="copy-block">Subject: You're in! Your Mini Pottery class is booked 🤎
+
+Hi [Name],
+
+Thanks so much for applying to be a Mini Pottery creator! We loved your angle ("[their chosen angle]") and would love to host you for our [class they picked].
+
+Here are the details:
+📅 Date: [date]
+⏰ Time: [time]
+📍 Address: [studio address]
+👥 Bringing: [friend / date / solo, based on their answer]
+
+What we'd love from you:
+🎥 1 Reel on Instagram (60+ sec)
+🎥 1 TikTok (60+ sec)
+📅 Posted within 3 weeks of your class (when your pottery is fired and ready to take home)
+
+Tag @minipotterystudio in both — we'd love to re-share!
+
+Any questions, just reply here. So excited to meet you 🤎
+
+[Your name]
+Mini Pottery Studio</div>
+
+  <h3>Email template — "Thanks, not this time" 💌</h3>
+  <div class="copy-block">Subject: Thanks for applying to Mini Pottery 🤎
+
+Hi [Name],
+
+Thank you so much for applying to be a Mini Pottery creator! We had a wonderful response and unfortunately couldn't fit everyone in this round.
+
+We'd love to keep your info on file for future creator rounds (we run them every few months!). And if you ever want to book a class as a regular customer, we'd be so happy to host you.
+
+Thanks for thinking of us 🤎
+
+[Your name]
+Mini Pottery Studio</div>
+</section>
+
+<!-- ════════════════════ CHECKLIST ════════════════════ -->
+<section>
+  <h2>✅ Quick Launch Checklist</h2>
+  <ol style="padding-left: 22px; line-height: 1.9;">
+    <li>Create the Google Form (paste the copy above into forms.new). Connect it to a Google Sheet under the "Responses" tab.</li>
+    <li>Copy the form's "Send" link. Add it to your Instagram bio (Linktree or direct link).</li>
+    <li>Create the Reel and 3 photos in Canva or your usual editor. Use the shot lists + captions above.</li>
+    <li>Post on the calendar dates. Save the photos and reel link for easy reposting in Stories.</li>
+    <li>Each week, post a Story reminder pointing to the link in bio.</li>
+    <li>On June 21, review submissions in your Google Sheet. Pick your favorites.</li>
+    <li>Email selected creators using the templates above.</li>
+  </ol>
+</section>
+
+<footer>
+  <p>Minipottery Studio · Creator Casting Call · June 2026</p>
+</footer>
+
+</div>
+
+</body>
+</html>
