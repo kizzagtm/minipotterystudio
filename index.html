@@ -914,9 +914,30 @@
             const text = (e.clipboardData || window.clipboardData).getData('text');
             document.execCommand('insertText', false, text);
           });
+
+          // Email column (cellIndex 4): auto-link real addresses as mailto:
+          if (cellIndex === 4) {
+            linkifyEmailCell(cell);
+            cell.addEventListener('blur', () => {
+              linkifyEmailCell(cell);
+              localStorage.setItem(STORAGE_PREFIX + cellId, cell.innerHTML);
+            });
+          }
         });
       });
     });
+  }
+
+  // ────────────────────────────────────────
+  // Email column: turn a plain address into a clickable mailto: link
+  // ────────────────────────────────────────
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function linkifyEmailCell(cell) {
+    const text = cell.textContent.trim();
+    if (!text || cell.querySelector('a')) return;
+    if (EMAIL_RE.test(text)) {
+      cell.innerHTML = `<a href="mailto:${text}">${text}</a>`;
+    }
   }
 
   // ────────────────────────────────────────
@@ -1176,6 +1197,13 @@
       if (local !== null) {
         cell.innerHTML = local;
         cell.classList.remove('empty');
+      }
+    });
+
+    // Link up any email addresses that came from GitHub or localStorage
+    document.querySelectorAll('[data-cell-id]').forEach(cell => {
+      if (cell.getAttribute('data-cell-id').endsWith('-c4')) {
+        linkifyEmailCell(cell);
       }
     });
 
